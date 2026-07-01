@@ -72,7 +72,13 @@ jobs:
         env:
           DB_URL: ${{ secrets.DB_URL }}
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} DB_URL="$DB_URL" bash -s << 'EOF'
+          DB_URL_B64=$(echo -n "$DB_URL_RAW" | base64 -w 0)
+
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${{ secrets.USER_SERVER }}@${{ secrets.EC2_HOST }} \
+          DB_URL_B64="$DB_URL_B64" bash -s << 'EOF'
+
+            DB_URL=$(echo "$DB_URL_B64" | base64 --decode)
+            
             # Autenticar en DockerHub desde EC2
             echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             # Descargar la última versión de la imagen
