@@ -70,7 +70,7 @@ jobs:
       # Paso 6: Conectarse a EC2 y desplegar el contenedor
       - name: SSH commands to deploy
         env:
-          DB_URL: ${{ secrets.DB_URL }}
+          DB_URL_RAW: ${{ secrets.DB_URL }}
         run: |
           DB_URL_B64=$(echo -n "$DB_URL_RAW" | base64 -w 0)
 
